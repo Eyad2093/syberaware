@@ -2,7 +2,7 @@
 //  Stage 2 — CYBER QUEST
 //  Chat bubble, Byte's Tip, +N point choices, feedback modal
 // ============================================================
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CyberByte from '../components/CyberByte';
 import BadgeModal from '../components/BadgeModal';
 import { useGame } from '../context/GameContext';
@@ -22,10 +22,16 @@ export default function QuestScreen() {
   const [submitted, setSubmitted]       = useState(false);
   const [modalOpen, setModalOpen]       = useState(false);
   const [shakeId, setShakeId]           = useState(null);
+  const [gameOver, setGameOver]         = useState(false);
   const advancing = useRef(false);
 
   const quest  = QUEST_SCENARIOS[currentIndex];
   const isLast = currentIndex === QUEST_SCENARIOS.length - 1;
+
+  // Keep the nav-bar "LV." in sync with the quest the player is on
+  useEffect(() => {
+    dispatch({ type: 'SET_LEVEL', payload: quest.questNumber });
+  }, [quest.questNumber, dispatch]);
 
   const currentFeedback = submitted
     ? (selected === quest.correctId ? quest.feedbackCorrect : quest.feedbackWrong)
@@ -55,12 +61,29 @@ export default function QuestScreen() {
       setShakeId(choiceId);
       setTimeout(() => setShakeId(null), 600);
     }
+
+    // Losing the last heart ends this attempt
+    if (pts === 0 && state.hearts <= 1) setGameOver(true);
+
     setTimeout(() => setModalOpen(true), wrong ? 700 : 300);
+  }
+
+  function handleRetry() {
+    setModalOpen(false);
+    setTimeout(() => {
+      dispatch({ type: 'RESET_QUEST' });
+      setCurrentIndex(0);
+      setSelected(null);
+      setSubmitted(false);
+      setGameOver(false);
+      advancing.current = false;
+    }, 250);
   }
 
   function handleContinue() {
     if (advancing.current) return;
     advancing.current = true;
+    if (gameOver) { handleRetry(); return; }
     setModalOpen(false);
 
     setTimeout(() => {
@@ -150,11 +173,16 @@ export default function QuestScreen() {
 
       <BadgeModal
         isOpen={modalOpen}
+        variant={gameOver ? 'gameover' : 'feedback'}
         isCorrect={selected === quest.correctId}
         pointsEarned={pointsEarned}
-        heading={currentFeedback?.heading ?? ''}
-        summary={currentFeedback?.summary ?? ''}
+        heading={gameOver ? 'OUT OF HEARTS!' : (currentFeedback?.heading ?? '')}
+        summary={gameOver
+          ? 'You lost all 3 hearts. Every hero needs a few tries, so let\'s go again!'
+          : (currentFeedback?.summary ?? '')}
         explanation={currentFeedback?.explanation ?? ''}
+        explanationLabel={gameOver ? 'REMEMBER THIS FOR NEXT TIME' : 'FEEDBACK EXPLANATION'}
+        buttonLabel={gameOver ? 'TRY AGAIN ↻' : 'CONTINUE QUEST →'}
         onContinue={handleContinue}
       />
     </>

@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd syberaware && npm run build",
+  "outputDirectory": "syberaware/dist",
+  "installCommand": "cd syberaware && npm install"
+}

@@ -180,4 +180,11 @@ export const POST_TEST_SCENARIOS = [
   },
 ];
 
-export const TOPICS = ['DISCIPLINE', 'STRESS CONTROL', 'ONLINE SAFETY'];
+// One skill per question number: pre-test N, quest N and post-test N all cover the same danger.
+export const TOPICS = ['SPOTTING FAKE MESSAGES', 'SCAMS & RISKY LINKS', 'KEEPING INFO PRIVATE'];
+
+export const TOPIC_TIPS = [
+  'Real support never asks for your password. Stop, don\'t click, and tell a grown-up.',
+  '"Free" prizes and strange links are bait. Close them and go to the real site yourself.',
+  'Never share your name, address, school or birthday with people you only know online.',
+];

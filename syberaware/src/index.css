@@ -287,6 +287,19 @@ button { font-family: inherit; }
   border-radius: 3px;
   transform: rotate(1.2deg);
 }
+.chip-pink {
+  display: inline-block;
+  background: var(--pink);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 11px 18px;
+  border-radius: 3px;
+  transform: rotate(1.2deg);
+}
+.modal-card.gameover { box-shadow: 10px 10px 0 var(--pink); }
 
 /* ============================================================
    BADGE MODAL
@@ -321,9 +334,10 @@ button { font-family: inherit; }
 /* ============================================================
    DASHBOARD  (SESSION COMPLETE)
    ============================================================ */
-.dash { max-width: 700px; text-align: center; padding-top: 22px; }
+.dash { max-width: 760px; text-align: center; padding-top: 22px; }
 .dash .pixel-title { font-size: clamp(2.4rem, 6vw, 3.4rem); line-height: 1.02; }
-.dash-sub { margin-top: 16px; font-size: 0.52rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; }
+.dash-sub { margin-top: 16px; font-size: 0.56rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; }
+.dash-hello { margin-top: 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; color: var(--yellow); text-transform: uppercase; }
 
 .score-row { display: flex; gap: 22px; margin-top: 18px; }
 .score-card {
@@ -337,10 +351,20 @@ button { font-family: inherit; }
 }
 .score-card:nth-child(1) { transform: rotate(-1deg); }
 .score-card:nth-child(2) { transform: rotate(0.8deg); }
-.score-tag { display: inline-block; background: var(--pink); color: #fff; font-size: 0.46rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 9px; border-radius: 2px; margin-bottom: 14px; }
-.score-big { font-family: var(--font-head); font-weight: 700; font-size: 3.2rem; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
+.score-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.score-tag { display: inline-block; background: var(--pink); color: #fff; font-size: 0.52rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 9px; border-radius: 2px; }
+.time-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; color: var(--cyan); background: rgba(0, 220, 255, 0.1); border: 1px solid rgba(0, 220, 255, 0.35); border-radius: 999px; padding: 4px 9px; font-variant-numeric: tabular-nums; }
+.score-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 92px; }
+.score-big { font-family: var(--font-head); font-weight: 700; font-size: 3.4rem; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
 .score-big.cyan { color: var(--cyan); }
-.score-of { font-size: 0.5rem; color: #6e7596; margin-left: 10px; }
+.score-of { font-size: 0.6rem; color: #8a90b0; margin-left: 10px; }
+.score-right { margin-top: 10px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; color: #dfe3f6; }
+.score-note { margin: 22px auto 0; max-width: 560px; font-size: 0.58rem; line-height: 1.7; letter-spacing: 0.06em; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+
+/* gold perfect-score sticker */
+.gold-badge { position: relative; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; transform: rotate(8deg); filter: drop-shadow(3px 4px 0 rgba(0, 0, 0, 0.45)); animation: badge-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s both, float 3s ease-in-out 1.6s infinite; }
+.gold-badge-label { margin-top: -2px; background: var(--yellow); color: #3a2a00; font-size: 0.5rem; font-weight: 700; letter-spacing: 0.1em; padding: 3px 8px; border-radius: 2px; transform: rotate(-4deg); }
+@keyframes badge-pop { from { opacity: 0; transform: rotate(-30deg) scale(0.2); } to { opacity: 1; transform: rotate(8deg) scale(1); } }
 
 .metric-card {
   margin-top: 26px;
@@ -355,22 +379,32 @@ button { font-family: inherit; }
   color: var(--ink);
 }
 .metric-icon { width: 38px; height: 38px; border-radius: 6px; background: #d8f6ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.metric-label { font-size: 0.52rem; font-weight: 700; color: #0095b6; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px; }
-.metric-desc { font-size: 0.5rem; color: #8b8fa0; line-height: 1.5; }
-.metric-value { margin-left: auto; text-align: right; flex-shrink: 0; }
-.metric-value strong { display: block; font-family: var(--font-head); font-weight: 700; font-size: 1.7rem; color: #0a0a2a; line-height: 1; }
-.metric-value span { display: block; margin-top: 6px; font-size: 0.4rem; color: #8b8fa0; letter-spacing: 0.08em; text-transform: uppercase; }
+.metric-label { font-size: 0.62rem; font-weight: 700; color: #0095b6; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.metric-desc { font-size: 0.62rem; font-weight: 500; color: #4d5168; line-height: 1.6; }
+.metric-value { margin-left: auto; text-align: right; flex-shrink: 0; padding-left: 8px; }
+.metric-value strong { display: block; font-family: var(--font-head); font-weight: 700; font-size: 2.2rem; color: #0a0a2a; line-height: 1; }
+.metric-value span { display: block; margin-top: 6px; font-size: 0.46rem; font-weight: 600; color: #6b6f86; letter-spacing: 0.08em; text-transform: uppercase; }
 
 .topic-block { margin: 34px 0 0; padding: 0 18px; text-align: left; }
-.topic-note { display: flex; justify-content: space-between; font-size: 0.42rem; color: #cfd3e6; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
-.topic-note b { color: var(--cyan); font-weight: 500; }
-.topic-row { margin-bottom: 18px; }
-.topic-head { display: flex; justify-content: space-between; font-size: 0.46rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; font-weight: 600; }
-.topic-head span:last-child { color: var(--cyan); font-weight: 500; }
-.bar-track { position: relative; height: 15px; background: rgba(10,10,30,0.7); }
+.topic-title { font-family: var(--font-head); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.02em; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.7); }
+.topic-note { margin-top: 6px; font-size: 0.58rem; line-height: 1.7; color: #e9ecfa; letter-spacing: 0.05em; text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
+.bar-legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 10px 0 18px; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
+.bar-legend .swatch { display: inline-block; width: 22px; height: 6px; margin-right: 6px; vertical-align: middle; }
+.swatch.white { background: #fff; }
+.swatch.cyan { background: var(--cyan); }
+.topic-row { margin-bottom: 20px; padding: 12px 14px 12px; background: rgba(10, 10, 42, 0.78); border-radius: 6px; }
+.topic-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 9px; font-weight: 700; }
+.skill-status { font-size: 0.5rem; font-weight: 700; letter-spacing: 0.06em; padding: 4px 8px; border-radius: 2px; white-space: nowrap; }
+.skill-status.pro   { background: var(--yellow); color: #3a2a00; }
+.skill-status.new   { background: var(--cyan); color: #04142a; }
+.skill-status.again { background: var(--pink); color: #fff; }
+.skill-status.oops  { background: #ffb347; color: #3a2000; }
+.bar-track { position: relative; height: 15px; background: rgba(255,255,255,0.08); }
 .bar-pre, .bar-post { position: absolute; left: 0; transition: width 1.2s cubic-bezier(0.3, 0.9, 0.3, 1); }
 .bar-pre { top: 0; height: 5px; background: #fff; z-index: 2; }
 .bar-post { top: 7px; height: 8px; background: var(--cyan); }
+.topic-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin-top: 9px; font-size: 0.5rem; font-weight: 600; letter-spacing: 0.06em; color: #b9bfdc; }
+.topic-tip { margin-top: 8px; font-size: 0.56rem; line-height: 1.6; color: var(--yellow); }
 
 .dash-actions { margin-top: 26px; display: flex; justify-content: center; }
 

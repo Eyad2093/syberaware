@@ -1,9 +1,20 @@
 // ============================================================
 //  Stage 4 — SESSION COMPLETE (behavioral change report)
+//  Written for kids: "x out of 3 right", points gained, time taken,
+//  gold badge for a perfect score, and a plain-language skill breakdown.
 // ============================================================
 import React, { useEffect, useState } from 'react';
 import { useGame } from '../context/GameContext';
-import { TOPICS } from '../data/scenarios';
+import { TOPICS, TOPIC_TIPS } from '../data/scenarios';
+
+const TOTAL_QUESTIONS = 3;
+
+function formatTime(seconds) {
+  if (seconds == null) return '--:--';
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
 
 function useCountUp(target) {
   const [value, setValue] = useState(0);
@@ -22,70 +33,173 @@ function useCountUp(target) {
   return value;
 }
 
-function ScoreCard({ label, score, cyan }) {
+/* Gold "perfect score" sticker (cream die-cut edge like the collage stickers) */
+function GoldBadge() {
+  return (
+    <div className="gold-badge" role="img" aria-label="Gold badge: perfect score, every answer right">
+      <svg viewBox="0 0 96 112" width="76" height="88" aria-hidden="true">
+        <defs>
+          <radialGradient id="gold-fill" cx="35%" cy="28%" r="80%">
+            <stop offset="0%" stopColor="#fff6a8" />
+            <stop offset="45%" stopColor="#ffd21f" />
+            <stop offset="100%" stopColor="#d89a00" />
+          </radialGradient>
+        </defs>
+        {/* ribbon tails */}
+        <path d="M26 70 L14 108 L34 98 L44 112 L50 74 Z" fill="#ff4f9a" stroke="#fffdf2" strokeWidth="3" strokeLinejoin="round" />
+        <path d="M70 70 L82 108 L62 98 L52 112 L46 74 Z" fill="#d93682" stroke="#fffdf2" strokeWidth="3" strokeLinejoin="round" />
+        {/* medal */}
+        <circle cx="48" cy="44" r="40" fill="#fffdf2" />
+        <circle cx="48" cy="44" r="35" fill="url(#gold-fill)" stroke="#b97f00" strokeWidth="2" />
+        <circle cx="48" cy="44" r="27" fill="none" stroke="#fff3a0" strokeWidth="1.5" strokeDasharray="3 3" />
+        <path
+          d="M48 23l6.2 12.8 14 2-10.1 9.9 2.4 14L48 55.1 35.5 61.7l2.4-14-10.1-9.9 14-2z"
+          fill="#fffdf2"
+          stroke="#b97f00"
+          strokeWidth="2"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <span className="gold-badge-label">PERFECT!</span>
+    </div>
+  );
+}
+
+function StopwatchIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="14" r="8" stroke="currentColor" strokeWidth="2.4" />
+      <path d="M12 9.5V14l3 2M9.5 2.5h5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ScoreCard({ label, score, rightCount, seconds, cyan }) {
   const shown = useCountUp(score);
+  const perfect = score === 100;
   return (
     <div className="score-card">
-      <span className="score-tag">{label}</span>
-      <div>
-        <span
-          className={`score-big ${cyan ? 'cyan' : ''}`}
-          aria-label={`${label} score: ${score ?? 0} out of 100`}
-        >
-          {shown}
+      <div className="score-top">
+        <span className="score-tag">{label}</span>
+        <span className="time-chip" aria-label={`Finished in ${formatTime(seconds)}`}>
+          <StopwatchIcon /> {formatTime(seconds)}
         </span>
-        <span className="score-of">/ 100</span>
+      </div>
+      <div className="score-main">
+        <div>
+          <span
+            className={`score-big ${cyan ? 'cyan' : ''}`}
+            aria-label={`${label} score: ${score ?? 0} out of 100`}
+          >
+            {shown}
+          </span>
+          <span className="score-of">/ 100</span>
+          <p className="score-right">{rightCount} OUT OF {TOTAL_QUESTIONS} RIGHT</p>
+        </div>
+        {perfect && <GoldBadge />}
       </div>
     </div>
   );
 }
 
-function TopicBars({ name, pre, post, delay }) {
+function getSkillStatus(pre, post) {
+  if (pre && post)  return { cls: 'pro',   text: 'ALREADY A PRO ★' };
+  if (!pre && post) return { cls: 'new',   text: 'NEW SKILL UNLOCKED!' };
+  if (pre && !post) return { cls: 'oops',  text: 'REVIEW THIS ONE' };
+  return               { cls: 'again', text: 'KEEP PRACTICING' };
+}
+
+function SkillRow({ name, pre, post, questPoints, tip, delay }) {
   const [w, setW] = useState({ pre: 0, post: 0 });
+  const preOk = pre >= 100;
+  const postOk = post >= 100;
   useEffect(() => {
     const t = setTimeout(() => setW({ pre, post }), delay + 300);
     return () => clearTimeout(t);
   }, [pre, post, delay]);
 
+  const status = getSkillStatus(preOk, postOk);
+
   return (
-    <div className="topic-row" aria-label={`${name}: ${pre} pre-test, ${post} post-test`}>
+    <div className="topic-row" aria-label={`${name}: before ${preOk ? 'right' : 'missed'}, after ${postOk ? 'right' : 'missed'}`}>
       <div className="topic-head">
         <span>{name}</span>
-        <span>{pre} → {post}</span>
+        <span className={`skill-status ${status.cls}`}>{status.text}</span>
       </div>
       <div className="bar-track" role="progressbar" aria-valuenow={post} aria-valuemax={100}>
         <div className="bar-pre"  style={{ width: `${w.pre}%` }} />
         <div className="bar-post" style={{ width: `${w.post}%` }} />
       </div>
+      <p className="topic-meta">
+        <span>BEFORE: {preOk ? '✓ RIGHT' : '✗ MISSED'}</span>
+        <span>QUEST: {questPoints ?? 0}/2 ★</span>
+        <span>AFTER: {postOk ? '✓ RIGHT' : '✗ MISSED'}</span>
+      </p>
+      {!postOk && <p className="topic-tip">TIP: {tip}</p>}
     </div>
   );
 }
 
-function getImprovementText(delta) {
-  if (delta >= 50) return 'Significant growth observed in cybersecurity response protocols.';
-  if (delta >= 20) return 'Notable improvement in cyber threat awareness and response.';
-  if (delta >= 0)  return 'Steady progress in cyber safety decision-making.';
-  return 'Keep practicing — every quest builds stronger cyber skills!';
+function getImprovement(delta, pre, post, preRight, postRight) {
+  if (delta > 0) {
+    return {
+      label: 'HOW MUCH YOU IMPROVED',
+      desc: `Before the quest you got ${preRight} out of ${TOTAL_QUESTIONS} right. After it you got ${postRight} out of ${TOTAL_QUESTIONS}. The Cyber Quest taught you something!`,
+      value: `+${delta}`,
+      unit: 'POINTS GAINED',
+    };
+  }
+  if (delta === 0 && post === 100) {
+    return {
+      label: 'CYBER PRO!',
+      desc: `You got all ${TOTAL_QUESTIONS} right before AND after the quest. You already know how to stay safe online. Amazing!`,
+      value: '100',
+      unit: 'POINTS BOTH TIMES',
+    };
+  }
+  if (delta === 0) {
+    return {
+      label: 'SAME SCORE',
+      desc: `You got ${postRight} out of ${TOTAL_QUESTIONS} right both times. Try the quest again to learn the tricky ones!`,
+      value: '0',
+      unit: 'POINTS CHANGED',
+    };
+  }
+  return {
+    label: 'KEEP PRACTICING',
+    desc: `Your score dipped from ${preRight} to ${postRight} right. That's okay. Play the quest again and you'll get stronger!`,
+    value: `${delta}`,
+    unit: 'POINTS CHANGED',
+  };
 }
 
 export default function DashboardScreen() {
   const { state, dispatch } = useGame();
-  const { preTestScore, postTestScore, topicPreScores, topicPostScores } = state;
+  const {
+    playerName, preTestScore, postTestScore, topicPreScores, topicPostScores,
+    questAnswers, preTestSeconds, postTestSeconds,
+  } = state;
 
   const pre   = preTestScore  ?? 0;
   const post  = postTestScore ?? 0;
   const delta = post - pre;
-  const relGain = pre > 0 ? (((post - pre) / pre) * 100).toFixed(1) : post > 0 ? '∞' : '0';
+  const preRight  = topicPreScores.filter(s => s >= 100).length;
+  const postRight = topicPostScores.filter(s => s >= 100).length;
+  const improvement = getImprovement(delta, pre, post, preRight, postRight);
 
   return (
     <main id="dashboard-screen" className="stage dash">
       <h1 className="pixel-title">SESSION<br />COMPLETE</h1>
       <p className="dash-sub">BEHAVIORAL CHANGE REPORT</p>
+      <p className="dash-hello">GREAT JOB, {String(playerName).toUpperCase()}! HERE&apos;S HOW YOU DID.</p>
 
       <div className="score-row" role="region" aria-label="Score comparison">
-        <ScoreCard label="PRE-TEST"  score={pre} />
-        <ScoreCard label="POST-TEST" score={post} cyan />
+        <ScoreCard label="PRE-TEST"  score={pre}  rightCount={preRight}  seconds={preTestSeconds} />
+        <ScoreCard label="POST-TEST" score={post} rightCount={postRight} seconds={postTestSeconds} cyan />
       </div>
+      <p className="score-note">
+        EVERY RIGHT ANSWER IS WORTH ABOUT 33 POINTS, SO 3 RIGHT = 100! THE CLOCK SHOWS HOW FAST YOU FINISHED.
+      </p>
 
       <div className="metric-card" role="region" aria-label="Behavioral improvement summary">
         <div className="metric-icon" aria-hidden="true">
@@ -95,23 +209,32 @@ export default function DashboardScreen() {
           </svg>
         </div>
         <div>
-          <p className="metric-label">BEHAVIORAL IMPROVEMENT</p>
-          <p className="metric-desc">{getImprovementText(delta)}</p>
+          <p className="metric-label">{improvement.label}</p>
+          <p className="metric-desc">{improvement.desc}</p>
         </div>
         <div className="metric-value">
-          <strong>{delta >= 0 ? '+' : ''}{relGain}%</strong>
-          <span>APPROX. RELATIVE GAIN</span>
+          <strong>{improvement.value}</strong>
+          <span>{improvement.unit}</span>
         </div>
       </div>
 
-      <section className="topic-block" aria-label="Per-topic score comparison">
-        <p className="topic-note"><span>ILLUSTRATIVE SAMPLE DATA</span><b>PRE ▬ POST ▬</b></p>
+      <section className="topic-block" aria-label="Skill by skill breakdown">
+        <h2 className="topic-title">SKILL BY SKILL</h2>
+        <p className="topic-note">
+          EACH SKILL IS ONE QUESTION ABOUT AN ONLINE DANGER. A FULL BAR MEANS YOU GOT IT RIGHT!
+        </p>
+        <p className="bar-legend">
+          <span><i className="swatch white" /> WHITE BAR = BEFORE THE QUEST</span>
+          <span><i className="swatch cyan" /> BLUE BAR = AFTER THE QUEST</span>
+        </p>
         {TOPICS.map((name, i) => (
-          <TopicBars
+          <SkillRow
             key={name}
             name={name}
             pre={topicPreScores[i] ?? 0}
             post={topicPostScores[i] ?? 0}
+            questPoints={questAnswers[`quest-${i + 1}`]?.points}
+            tip={TOPIC_TIPS[i]}
             delay={i * 200}
           />
         ))}
