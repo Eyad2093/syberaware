@@ -25,13 +25,22 @@ function useTimer(running = true) {
 }
 
 export default function StatsHeader() {
-  const { state } = useGame();
+  const { state, dispatch } = useGame();
   const { stage, hearts, maxHearts, level } = state;
   const timer = useTimer(stage >= 1 && stage <= 3);
 
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    if (stage >= 1 && stage <= 3) {
+      const confirmLeave = window.confirm('Return to the welcome screen? Your current session progress will be lost.');
+      if (!confirmLeave) return;
+    }
+    dispatch({ type: 'RESTART' });
+  };
+
   return (
     <header id="stats-header" className="nav-bar">
-      <a href="#" className="nav-logo" aria-label="SyberAware home">
+      <a href="#" className="nav-logo" onClick={handleLogoClick} aria-label="SyberAware home">
         <img src={`${import.meta.env.BASE_URL}eye.png`} alt="" />
         <span className="nav-logo-text">Syber<b>Aware</b></span>
       </a>
