@@ -1,6 +1,0 @@
-{
-  "buildCommand": "npm --prefix syberaware run build",
-  "outputDirectory": "syberaware/dist",
-  "installCommand": "npm --prefix syberaware install",
-  "framework": null
-}
