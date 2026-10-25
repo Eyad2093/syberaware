@@ -9,13 +9,6 @@ import { TOPICS, TOPIC_TIPS } from '../data/scenarios';
 
 const TOTAL_QUESTIONS = TOPICS.length;
 
-function formatTime(seconds) {
-  if (seconds == null) return '--:--';
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
 function useCountUp(target) {
   const [value, setValue] = useState(0);
   useEffect(() => {
@@ -65,25 +58,13 @@ function GoldBadge() {
   );
 }
 
-function StopwatchIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="14" r="8" stroke="currentColor" strokeWidth="2.4" />
-      <path d="M12 9.5V14l3 2M9.5 2.5h5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ScoreCard({ label, score, rightCount, seconds, cyan }) {
+function ScoreCard({ label, score, rightCount, cyan }) {
   const shown = useCountUp(score);
   const perfect = score === 100;
   return (
     <div className="score-card">
       <div className="score-top">
         <span className="score-tag">{label}</span>
-        <span className="time-chip" aria-label={`Finished in ${formatTime(seconds)}`}>
-          <StopwatchIcon /> {formatTime(seconds)}
-        </span>
       </div>
       <div className="score-main">
         <div>
@@ -177,7 +158,7 @@ export default function DashboardScreen() {
   const { state, dispatch } = useGame();
   const {
     playerName, preTestScore, postTestScore, topicPreScores, topicPostScores,
-    questAnswers, preTestSeconds, postTestSeconds,
+    questAnswers,
   } = state;
 
   const pre   = preTestScore  ?? 0;
@@ -195,14 +176,18 @@ export default function DashboardScreen() {
 
       {state.maxStreak >= 2 && (
         <div className="dash-streak-banner">
-          <span className="dash-streak-icon" aria-hidden="true">🔥</span>
+          <img
+            src={`${import.meta.env.BASE_URL}pixel-fire.png`}
+            className="dash-streak-img"
+            alt=""
+          />
           <span>BEST CONSECUTIVE STREAK: <strong>{state.maxStreak} IN A ROW!</strong></span>
         </div>
       )}
 
       <div className="score-row" role="region" aria-label="Score comparison">
-        <ScoreCard label="PRE-TEST"  score={pre}  rightCount={preRight}  seconds={preTestSeconds} />
-        <ScoreCard label="POST-TEST" score={post} rightCount={postRight} seconds={postTestSeconds} cyan />
+        <ScoreCard label="PRE-TEST"  score={pre}  rightCount={preRight} />
+        <ScoreCard label="POST-TEST" score={post} rightCount={postRight} cyan />
       </div>
       <p className="score-note">
         EVERY RIGHT ANSWER IS WORTH {Math.round(100 / TOTAL_QUESTIONS)} POINTS, SO {TOTAL_QUESTIONS} RIGHT = 100!

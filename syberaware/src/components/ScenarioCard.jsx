@@ -5,6 +5,7 @@
 // ============================================================
 import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
+import StreakBurst from './StreakBurst';
 import { playCorrectSound, playWrongSound, playStreakSound } from '../utils/audio';
 
 export function Scribble() {
@@ -69,7 +70,7 @@ export default function TestCard({
         setSelected(null);
         setSubmitted(false);
       }
-    }, 450);
+    }, isCorrect ? 1100 : 450);
   }
 
   function choiceCls(id) {
@@ -79,8 +80,11 @@ export default function TestCard({
     return '';
   }
 
+  const answeredCorrectly = submitted && selected === scenario.correctId;
+
   return (
     <main id={mainId} className="stage">
+      {answeredCorrectly && <StreakBurst count={state.streak} />}
       <h1 className="pixel-title">{title}</h1>
       <p className="page-subtitle">{subtitle}</p>
 

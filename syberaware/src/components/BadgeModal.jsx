@@ -46,7 +46,8 @@ export default function BadgeModal({
           <div className="modal-top-chips">
             {isCorrect && streak >= 2 && (
               <span className="chip-streak" aria-label={`${streak} answers correct in a row`}>
-                🔥 {streak}X STREAK!
+                <img src={`${import.meta.env.BASE_URL}pixel-fire.png`} className="chip-streak-fire" alt="" />
+                {streak}X STREAK!
               </span>
             )}
             {gameOver ? (

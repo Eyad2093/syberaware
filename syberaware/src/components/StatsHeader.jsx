@@ -28,14 +28,16 @@ export default function StatsHeader() {
 
   return (
     <header id="stats-header" className="nav-bar">
-      <a href="#" className="nav-logo" onClick={handleLogoClick} aria-label="SyberAware home">
-        <img src={`${import.meta.env.BASE_URL}eye.png`} alt="" />
-        <span className="nav-logo-text">Syber<b>Aware</b></span>
-      </a>
+      <div className="nav-left">
+        <a href="#" className="nav-logo" onClick={handleLogoClick} aria-label="SyberAware home">
+          <img src={`${import.meta.env.BASE_URL}eye.png`} alt="" />
+          <span className="nav-logo-text">Syber<b>Aware</b></span>
+        </a>
 
-      <span className="nav-counter" aria-label={`Stage ${stage} of 4`}>
-        {String(stage).padStart(2, '0')} /04
-      </span>
+        <span className="nav-counter" aria-label={`Stage ${stage} of 4`}>
+          {String(stage).padStart(2, '0')} /04
+        </span>
+      </div>
 
       <nav className="nav-tabs" aria-label="Stage navigation">
         {STAGES.map(s => {
@@ -63,7 +65,11 @@ export default function StatsHeader() {
             aria-label={`Current answer streak: ${streak} in a row`}
             title={`${streak} correct answers in a row!`}
           >
-            <span className="streak-icon" aria-hidden="true">🔥</span>
+            <img
+              src={`${import.meta.env.BASE_URL}pixel-fire.png`}
+              className="nav-streak-fire"
+              alt=""
+            />
             <span className="streak-val">{streak}</span>
             <span className="streak-tag">{streak >= 3 ? 'SUPER STREAK' : 'STREAK'}</span>
           </div>
@@ -74,7 +80,13 @@ export default function StatsHeader() {
         </span>
         <div className="nav-hearts" role="status" aria-label={`${hearts} of ${maxHearts} hearts remaining`}>
           {Array.from({ length: maxHearts }).map((_, i) => (
-            <span key={i} className={`nav-heart ${i < hearts ? '' : 'empty'}`} aria-hidden="true">♥</span>
+            <img
+              key={i}
+              src={`${import.meta.env.BASE_URL}pixel-heart.png`}
+              className={`nav-pixel-heart ${i < hearts ? '' : 'empty'}`}
+              alt=""
+              aria-hidden="true"
+            />
           ))}
         </div>
       </div>

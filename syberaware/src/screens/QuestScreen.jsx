@@ -5,6 +5,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CyberByte from '../components/CyberByte';
 import BadgeModal from '../components/BadgeModal';
+import StreakBurst from '../components/StreakBurst';
 import { useGame } from '../context/GameContext';
 import { QUEST_SCENARIOS } from '../data/scenarios';
 import { playCorrectSound, playPartialSound, playWrongSound, playStreakSound } from '../utils/audio';
@@ -184,6 +185,8 @@ export default function QuestScreen() {
           </div>
         </article>
       </main>
+
+      {submitted && pointsEarned === 2 && <StreakBurst count={state.streak} />}
 
       <BadgeModal
         isOpen={modalOpen}
