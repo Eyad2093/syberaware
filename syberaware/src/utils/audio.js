@@ -20,6 +20,18 @@ function getAudioContext() {
   return audioCtx;
 }
 
+// Create + unlock the audio engine on the very first tap/click anywhere, so the
+// first real sound isn't clipped while the browser is still "waking up" the audio.
+if (typeof window !== 'undefined') {
+  const unlock = () => {
+    getAudioContext();
+    window.removeEventListener('pointerdown', unlock);
+    window.removeEventListener('keydown', unlock);
+  };
+  window.addEventListener('pointerdown', unlock);
+  window.addEventListener('keydown', unlock);
+}
+
 export function isSoundEnabled() {
   return soundEnabled;
 }
@@ -30,34 +42,55 @@ export function toggleSound() {
 }
 
 /**
- * 8-Bit Correct Answer / Level Up:
- * Bright, joyful ascending 4-note square-wave arpeggio (C5 -> E5 -> G5 -> C6)
+ * Plays a short chip-tune phrase.
+ * - `step`  : seconds between note starts
+ * - `hold`  : how long every note rings before decaying
+ * - `tail`  : extra ring-out added to the LAST note so the melody finishes cleanly
  */
-export function playCorrectSound() {
-  if (!soundEnabled) return;
+function playPhrase({ notes, type, step, hold, tail = 0, volume }) {
   const ctx = getAudioContext();
   if (!ctx) return;
 
-  const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
-  const startTime = ctx.currentTime;
+  // Small lead-in so the first note is never clipped while the context spins up
+  const startTime = ctx.currentTime + 0.04;
 
   notes.forEach((freq, idx) => {
+    const t0 = startTime + idx * step;
+    const isLastNote = idx === notes.length - 1;
+    const ring = hold + (isLastNote ? tail : 0);
+
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(freq, startTime + idx * 0.07);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
 
-    // 8-bit punchy envelope
-    gain.gain.setValueAtTime(0, startTime + idx * 0.07);
-    gain.gain.linearRampToValueAtTime(0.18, startTime + idx * 0.07 + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, startTime + idx * 0.07 + 0.16);
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.linearRampToValueAtTime(volume, t0 + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + ring);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
 
-    osc.start(startTime + idx * 0.07);
-    osc.stop(startTime + idx * 0.07 + 0.18);
+    osc.start(t0);
+    osc.stop(t0 + ring + 0.05);
+  });
+}
+
+/**
+ * 8-Bit Correct Answer / Level Up:
+ * Bright, joyful ascending 4-note square-wave arpeggio (C5 -> E5 -> G5 -> C6)
+ * with a held final note so it doesn't get cut off.
+ */
+export function playCorrectSound() {
+  if (!soundEnabled) return;
+  playPhrase({
+    notes: [523.25, 659.25, 783.99, 1046.5], // C5, E5, G5, C6
+    type: 'square',
+    step: 0.09,
+    hold: 0.2,
+    tail: 0.45,
+    volume: 0.18,
   });
 }
 
@@ -67,57 +100,42 @@ export function playCorrectSound() {
  */
 export function playPartialSound() {
   if (!soundEnabled) return;
-  const ctx = getAudioContext();
-  if (!ctx) return;
-
-  const notes = [392.0, 440.0]; // G4, A4
-  const startTime = ctx.currentTime;
-
-  notes.forEach((freq, idx) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, startTime + idx * 0.1);
-
-    gain.gain.setValueAtTime(0, startTime + idx * 0.1);
-    gain.gain.linearRampToValueAtTime(0.2, startTime + idx * 0.1 + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, startTime + idx * 0.1 + 0.18);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start(startTime + idx * 0.1);
-    osc.stop(startTime + idx * 0.1 + 0.2);
+  playPhrase({
+    notes: [392.0, 440.0], // G4, A4
+    type: 'triangle',
+    step: 0.12,
+    hold: 0.22,
+    tail: 0.2,
+    volume: 0.22,
   });
 }
 
 /**
  * 8-Bit Wrong Answer / Trap Hit:
- * Low retro buzz descending tone (D#3 -> C3) with sawtooth crunch
+ * Low retro buzz descending tone (Eb3 -> G2) with sawtooth crunch
  */
 export function playWrongSound() {
   if (!soundEnabled) return;
   const ctx = getAudioContext();
   if (!ctx) return;
 
-  const startTime = ctx.currentTime;
+  const startTime = ctx.currentTime + 0.04;
 
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
 
   osc.type = 'sawtooth';
   osc.frequency.setValueAtTime(155.56, startTime); // Eb3
-  osc.frequency.exponentialRampToValueAtTime(98.0, startTime + 0.28); // G2
+  osc.frequency.exponentialRampToValueAtTime(98.0, startTime + 0.38); // G2
 
   gain.gain.setValueAtTime(0.2, startTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
+  gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.42);
 
   osc.connect(gain);
   gain.connect(ctx.destination);
 
   osc.start(startTime);
-  osc.stop(startTime + 0.32);
+  osc.stop(startTime + 0.46);
 }
 
 /**
@@ -126,27 +144,12 @@ export function playWrongSound() {
  */
 export function playStreakSound() {
   if (!soundEnabled) return;
-  const ctx = getAudioContext();
-  if (!ctx) return;
-
-  const notes = [587.33, 739.99, 880.0, 1174.66]; // D5, F#5, A5, D6
-  const startTime = ctx.currentTime;
-
-  notes.forEach((freq, idx) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(freq, startTime + idx * 0.06);
-
-    gain.gain.setValueAtTime(0, startTime + idx * 0.06);
-    gain.gain.linearRampToValueAtTime(0.22, startTime + idx * 0.06 + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, startTime + idx * 0.06 + 0.22);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start(startTime + idx * 0.06);
-    osc.stop(startTime + idx * 0.06 + 0.24);
+  playPhrase({
+    notes: [587.33, 739.99, 880.0, 1174.66], // D5, F#5, A5, D6
+    type: 'square',
+    step: 0.08,
+    hold: 0.22,
+    tail: 0.5,
+    volume: 0.22,
   });
 }
