@@ -1,8 +1,8 @@
 // ============================================================
 //  <StatsHeader/> — Top bar from the design:
-//  logo | 0X /04 | stage tabs | LV. | hearts | timer
+//  logo | 0X /04 | stage tabs | streak | LV. | hearts
 // ============================================================
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useGame } from '../context/GameContext';
 
 const STAGES = [
@@ -12,25 +12,13 @@ const STAGES = [
   { id: 4, label: 'BEHAVIOR DASHBOARD' },
 ];
 
-function useTimer(running = true) {
-  const [seconds, setSeconds] = useState(0);
-  useEffect(() => {
-    if (!running) return;
-    const id = setInterval(() => setSeconds(s => s + 1), 1000);
-    return () => clearInterval(id);
-  }, [running]);
-  const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
-  const ss = String(seconds % 60).padStart(2, '0');
-  return `${mm}:${ss}`;
-}
-
 export default function StatsHeader() {
   const { state, dispatch } = useGame();
-  const { stage, hearts, maxHearts, level } = state;
-  const timer = useTimer(stage >= 1 && stage <= 3);
+  const { stage, hearts, maxHearts, level, streak } = state;
 
   const handleLogoClick = (e) => {
     e.preventDefault();
+    if (stage === 0) return;
     if (stage >= 1 && stage <= 3) {
       const confirmLeave = window.confirm('Return to the welcome screen? Your current session progress will be lost.');
       if (!confirmLeave) return;
@@ -68,6 +56,19 @@ export default function StatsHeader() {
       </nav>
 
       <div className="nav-right">
+        {streak > 0 && (
+          <div
+            className={`nav-streak ${streak >= 3 ? 'hot' : ''}`}
+            role="status"
+            aria-label={`Current answer streak: ${streak} in a row`}
+            title={`${streak} correct answers in a row!`}
+          >
+            <span className="streak-icon" aria-hidden="true">🔥</span>
+            <span className="streak-val">{streak}</span>
+            <span className="streak-tag">{streak >= 3 ? 'SUPER STREAK' : 'STREAK'}</span>
+          </div>
+        )}
+
         <span className="nav-level" aria-label={`Level ${level}`}>
           LV. {String(level).padStart(2, '0')}
         </span>
@@ -76,7 +77,6 @@ export default function StatsHeader() {
             <span key={i} className={`nav-heart ${i < hearts ? '' : 'empty'}`} aria-hidden="true">♥</span>
           ))}
         </div>
-        <span className="nav-timer" aria-label={`Time elapsed: ${timer}`}>{timer}</span>
       </div>
     </header>
   );

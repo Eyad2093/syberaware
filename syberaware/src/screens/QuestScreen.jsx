@@ -7,6 +7,7 @@ import CyberByte from '../components/CyberByte';
 import BadgeModal from '../components/BadgeModal';
 import { useGame } from '../context/GameContext';
 import { QUEST_SCENARIOS } from '../data/scenarios';
+import { playCorrectSound, playPartialSound, playWrongSound, playStreakSound } from '../utils/audio';
 
 // "GameSupport_X" -> "GX", "CoolKid2009" -> "CK", "ProGamer_99" -> "PG"
 function initials(name) {
@@ -55,6 +56,19 @@ export default function QuestScreen() {
       type: 'ANSWER_QUEST',
       payload: { scenarioId: quest.id, choiceId, points: pts },
     });
+
+    // 8-bit sound feedback for right, partial, or wrong
+    if (pts === 2) {
+      if (state.streak >= 1) {
+        playStreakSound();
+      } else {
+        playCorrectSound();
+      }
+    } else if (pts === 1) {
+      playPartialSound();
+    } else {
+      playWrongSound();
+    }
 
     const wrong = choiceId !== quest.correctId;
     if (wrong) {
@@ -136,7 +150,7 @@ export default function QuestScreen() {
 
           {/* Byte's Tip */}
           <div className="byte-row">
-            <CyberByte size={46} animated />
+            <CyberByte size={48} animated mood="thinking" />
             <div className="byte-tip">
               <p className="byte-tip-label">BYTE'S TIP</p>
               <p className="byte-tip-text">{quest.byteTip}</p>
@@ -176,6 +190,7 @@ export default function QuestScreen() {
         variant={gameOver ? 'gameover' : 'feedback'}
         isCorrect={selected === quest.correctId}
         pointsEarned={pointsEarned}
+        streak={state.streak}
         heading={gameOver ? 'OUT OF HEARTS!' : (currentFeedback?.heading ?? '')}
         summary={gameOver
           ? 'You lost all 3 hearts. Every hero needs a few tries, so let\'s go again!'

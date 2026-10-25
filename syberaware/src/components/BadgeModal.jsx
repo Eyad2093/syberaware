@@ -10,6 +10,7 @@ export default function BadgeModal({
   isCorrect,
   variant = 'feedback',          // 'feedback' | 'gameover'
   pointsEarned = 0,
+  streak = 0,
   heading,
   summary,
   explanation,
@@ -29,6 +30,7 @@ export default function BadgeModal({
   if (!isOpen) return null;
 
   const gameOver = variant === 'gameover';
+  const mood = gameOver ? 'alert' : isCorrect ? 'happy' : pointsEarned === 1 ? 'thinking' : 'alert';
 
   return (
     <div
@@ -40,17 +42,24 @@ export default function BadgeModal({
     >
       <div className={`modal-card ${gameOver ? 'gameover' : ''}`}>
         <div className="modal-top-row">
-          <CyberByte size={52} animated />
-          {gameOver ? (
-            <span className="chip-pink" aria-label="No hearts left">♥ ♡ ♡ 0 LEFT</span>
-          ) : (
-            <span
-              className="chip-cyan"
-              aria-label={`${pointsEarned > 0 ? '+' : ''}${pointsEarned} points earned`}
-            >
-              {pointsEarned > 0 ? `+${pointsEarned} POINTS` : '0 POINTS'}
-            </span>
-          )}
+          <CyberByte size={54} animated mood={mood} />
+          <div className="modal-top-chips">
+            {isCorrect && streak >= 2 && (
+              <span className="chip-streak" aria-label={`${streak} answers correct in a row`}>
+                🔥 {streak}X STREAK!
+              </span>
+            )}
+            {gameOver ? (
+              <span className="chip-pink" aria-label="No hearts left">♥ ♡ ♡ 0 LEFT</span>
+            ) : (
+              <span
+                className={pointsEarned === 2 ? 'chip-cyan' : pointsEarned === 1 ? 'chip-yellow' : 'chip-pink'}
+                aria-label={`${pointsEarned > 0 ? '+' : ''}${pointsEarned} points earned`}
+              >
+                {pointsEarned > 0 ? `+${pointsEarned} POINTS` : '0 POINTS'}
+              </span>
+            )}
+          </div>
         </div>
 
         <h2 id="badge-modal-heading" className={`modal-heading ${isCorrect && !gameOver ? '' : 'wrong'}`}>

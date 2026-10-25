@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useGame } from '../context/GameContext';
 import { TOPICS, TOPIC_TIPS } from '../data/scenarios';
 
-const TOTAL_QUESTIONS = 3;
+const TOTAL_QUESTIONS = TOPICS.length;
 
 function formatTime(seconds) {
   if (seconds == null) return '--:--';
@@ -193,12 +193,19 @@ export default function DashboardScreen() {
       <p className="dash-sub">BEHAVIORAL CHANGE REPORT</p>
       <p className="dash-hello">GREAT JOB, {String(playerName).toUpperCase()}! HERE&apos;S HOW YOU DID.</p>
 
+      {state.maxStreak >= 2 && (
+        <div className="dash-streak-banner">
+          <span className="dash-streak-icon" aria-hidden="true">🔥</span>
+          <span>BEST CONSECUTIVE STREAK: <strong>{state.maxStreak} IN A ROW!</strong></span>
+        </div>
+      )}
+
       <div className="score-row" role="region" aria-label="Score comparison">
         <ScoreCard label="PRE-TEST"  score={pre}  rightCount={preRight}  seconds={preTestSeconds} />
         <ScoreCard label="POST-TEST" score={post} rightCount={postRight} seconds={postTestSeconds} cyan />
       </div>
       <p className="score-note">
-        EVERY RIGHT ANSWER IS WORTH ABOUT 33 POINTS, SO 3 RIGHT = 100! THE CLOCK SHOWS HOW FAST YOU FINISHED.
+        EVERY RIGHT ANSWER IS WORTH {Math.round(100 / TOTAL_QUESTIONS)} POINTS, SO {TOTAL_QUESTIONS} RIGHT = 100!
       </p>
 
       <div className="metric-card" role="region" aria-label="Behavioral improvement summary">

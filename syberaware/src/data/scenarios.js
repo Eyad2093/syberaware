@@ -1,6 +1,6 @@
 // ============================================================
 //  SyberAware — Game Data (Client-side only, no DB)
-//  3 scenarios per stage, matched to Figma designs
+//  4 scenarios per stage, covering essential youth cyber safety
 // ============================================================
 
 export const PRE_TEST_SCENARIOS = [
@@ -43,13 +43,26 @@ export const PRE_TEST_SCENARIOS = [
     correctId: 'c',
     footer: 'SAMPLE SCENARIO // PRE-TEST',
   },
+  {
+    id: 'pre-4',
+    tag: '// THE SCENARIO',
+    prompt:
+      '"You are setting a password for your main gaming account. Which of these is the safest password hygiene practice?"',
+    choices: [
+      { id: 'a', label: 'A.', text: 'Use "GameMaster2024!" so you remember it easily.' },
+      { id: 'b', label: 'B.', text: 'Use your school email password so all your logins are the same.' },
+      { id: 'c', label: 'C.', text: 'Create a long, unique 4-word passphrase with symbols and numbers.' },
+    ],
+    correctId: 'c',
+    footer: 'SAMPLE SCENARIO // PRE-TEST',
+  },
 ];
 
 export const QUEST_SCENARIOS = [
   {
     id: 'quest-1',
     questNumber: 1,
-    totalQuests: 3,
+    totalQuests: 4,
     levelTitle: 'THE PHISHING TRAP',
     sticker: { sender: 'GameSupport_X', time: 'JUST NOW' },
     message:
@@ -79,7 +92,7 @@ export const QUEST_SCENARIOS = [
   {
     id: 'quest-2',
     questNumber: 2,
-    totalQuests: 3,
+    totalQuests: 4,
     levelTitle: 'THE PASSWORD PLEA',
     sticker: { sender: 'CoolKid2009', time: '2 MINS AGO' },
     message:
@@ -109,7 +122,7 @@ export const QUEST_SCENARIOS = [
   {
     id: 'quest-3',
     questNumber: 3,
-    totalQuests: 3,
+    totalQuests: 4,
     levelTitle: 'THE OVERSHARE',
     sticker: { sender: 'ProGamer_99', time: 'JUST NOW' },
     message:
@@ -133,6 +146,36 @@ export const QUEST_SCENARIOS = [
       summary: 'Personal data shared online can be misused.',
       explanation:
         "Even sharing just your name and photo can be dangerous. Fake clans are used to build profiles on real kids. Always protect your identity online.",
+    },
+    footer: 'SAMPLE QUEST // CHOOSE YOUR NEXT MOVE',
+  },
+  {
+    id: 'quest-4',
+    questNumber: 4,
+    totalQuests: 4,
+    levelTitle: 'THE PASSWORD VAULT',
+    sticker: { sender: 'System_Security', time: 'JUST NOW' },
+    message:
+      '"Security Alert: Your password \'Gamer1234\' is too weak and was found in a leaked database. Please update it to secure your account!"',
+    byteTip: "Short or reused passwords get cracked by automated bots in seconds. Make your password a unique passphrase that only you know!",
+    choices: [
+      { id: 'a', label: 'A.', text: 'Create a unique 4-word passphrase with numbers and symbols.', points: 2 },
+      { id: 'b', label: 'B.', text: 'Change it to "Gamer1235!" — just one digit different and an exclamation mark.', points: 1 },
+      { id: 'c', label: 'C.', text: 'Ignore the alert. Nobody is going to guess my gamer tag anyway.', points: 0 },
+    ],
+    correctId: 'a',
+    bestPoints: 2,
+    feedbackCorrect: {
+      heading: 'VAULT SECURED!',
+      summary: 'Strong unique passphrases keep hackers out.',
+      explanation:
+        'Passphrases made of multiple unrelated words with symbols take automated cracking computers centuries to decipher! And by keeping it unique, other accounts stay safe if one gets breached.',
+    },
+    feedbackWrong: {
+      heading: 'CREDENTIAL RISK!',
+      summary: 'Weak or slight password variations are easily cracked.',
+      explanation:
+        'Hackers use automated dictionary tools that test millions of common words and slight variations like adding "!" or changing "4" to "5" in seconds. Always use long, unique passphrases!',
     },
     footer: 'SAMPLE QUEST // CHOOSE YOUR NEXT MOVE',
   },
@@ -178,13 +221,33 @@ export const POST_TEST_SCENARIOS = [
     correctId: 'b',
     footer: 'SAMPLE SCENARIO // POST-TEST',
   },
+  {
+    id: 'post-4',
+    tag: '// POST-CHECK',
+    prompt:
+      '"You need to create a new password for your personal account. Based on cyber safety and password hygiene, what should you do?"',
+    choices: [
+      { id: 'a', label: 'A.', text: 'Reuse your favorite game password so you never get locked out.' },
+      { id: 'b', label: 'B.', text: 'Combine your birthday and your dog\'s name.' },
+      { id: 'c', label: 'C.', text: 'Create a long, memorable passphrase with random words, numbers, and symbols unique to this account.' },
+    ],
+    correctId: 'c',
+    footer: 'SAMPLE SCENARIO // POST-TEST',
+  },
 ];
 
 // One skill per question number: pre-test N, quest N and post-test N all cover the same danger.
-export const TOPICS = ['SPOTTING FAKE MESSAGES', 'SCAMS & RISKY LINKS', 'KEEPING INFO PRIVATE'];
+export const TOPICS = [
+  'SPOTTING FAKE MESSAGES',
+  'SCAMS & RISKY LINKS',
+  'KEEPING INFO PRIVATE',
+  'PASSWORD HYGIENE',
+];
 
 export const TOPIC_TIPS = [
   'Real support never asks for your password. Stop, don\'t click, and tell a grown-up.',
   '"Free" prizes and strange links are bait. Close them and go to the real site yourself.',
   'Never share your name, address, school or birthday with people you only know online.',
+  'Build long, unique passphrases with 4+ words and symbols. Never reuse the same password across accounts!',
 ];
+

@@ -13,6 +13,8 @@ const initialState = {
   xp: 0,
   level: 1,
   totalQuestPoints: 0,
+  streak: 0,
+  maxStreak: 0,
 
   // Pre-test answers: { scenarioId: choiceId }
   preTestAnswers: {},
@@ -26,9 +28,9 @@ const initialState = {
   postTestAnswers: {},
   postTestScore: null,  // 0-100 after completion
 
-  // Per-topic scores for comparison
-  topicPreScores:  [0, 0, 0],  // indices match TOPICS
-  topicPostScores: [0, 0, 0],
+  // Per-topic scores for comparison (indices match TOPICS)
+  topicPreScores:  [0, 0, 0, 0],
+  topicPostScores: [0, 0, 0, 0],
 
   // Timing (seconds spent on each level) + how many times the quest was retried
   stageStartedAt: null,
@@ -71,6 +73,18 @@ function reducer(state, action) {
       };
     }
 
+    // Track correct streaks across tests and quest
+    case 'RECORD_ANSWER_RESULT': {
+      const isCorrect = Boolean(action.payload?.isCorrect);
+      const newStreak = isCorrect ? state.streak + 1 : 0;
+      const newMaxStreak = Math.max(state.maxStreak, newStreak);
+      return {
+        ...state,
+        streak: newStreak,
+        maxStreak: newMaxStreak,
+      };
+    }
+
     // Level shown in the nav bar = the quest/level the player is currently on
     case 'SET_LEVEL':
       return state.level === action.payload ? state : { ...state, level: action.payload };
@@ -79,12 +93,17 @@ function reducer(state, action) {
       const { scenarioId, choiceId, points } = action.payload;
       const newXp = state.xp + points * 10;
       const newHearts = points === 0 ? Math.max(0, state.hearts - 1) : state.hearts;
+      const isPerfect = points === 2;
+      const newStreak = isPerfect ? state.streak + 1 : 0;
+      const newMaxStreak = Math.max(state.maxStreak, newStreak);
       return {
         ...state,
         questAnswers: { ...state.questAnswers, [scenarioId]: { choiceId, points } },
         xp: newXp,
         hearts: newHearts,
         totalQuestPoints: state.totalQuestPoints + points,
+        streak: newStreak,
+        maxStreak: newMaxStreak,
       };
     }
 
@@ -96,6 +115,7 @@ function reducer(state, action) {
         xp: 0,
         level: 1,
         totalQuestPoints: 0,
+        streak: 0,
         questAnswers: {},
         questAttempts: state.questAttempts + 1,
       };

@@ -4,6 +4,8 @@
 //  cream choice buttons and pink NEXT QUESTION button.
 // ============================================================
 import React, { useState } from 'react';
+import { useGame } from '../context/GameContext';
+import { playCorrectSound, playWrongSound, playStreakSound } from '../utils/audio';
 
 export function Scribble() {
   return (
@@ -26,6 +28,7 @@ export default function TestCard({
   onFinish,
   mainId,
 }) {
+  const { state, dispatch } = useGame();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers]           = useState({});
   const [selected, setSelected]         = useState(null);
@@ -36,6 +39,19 @@ export default function TestCard({
 
   function handleNext() {
     if (!selected || submitted) return;
+
+    const isCorrect = selected === scenario.correctId;
+    if (isCorrect) {
+      if (state?.streak >= 1) {
+        playStreakSound();
+      } else {
+        playCorrectSound();
+      }
+    } else {
+      playWrongSound();
+    }
+
+    dispatch({ type: 'RECORD_ANSWER_RESULT', payload: { isCorrect } });
 
     const newAnswers = { ...answers, [scenario.id]: selected };
     setAnswers(newAnswers);
@@ -53,7 +69,7 @@ export default function TestCard({
         setSelected(null);
         setSubmitted(false);
       }
-    }, 400);
+    }, 450);
   }
 
   function choiceCls(id) {
