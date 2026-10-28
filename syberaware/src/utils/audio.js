@@ -153,3 +153,41 @@ export function playStreakSound() {
     volume: 0.22,
   });
 }
+
+// ------------------------------------------------------------
+//  Recorded sound files (public/sounds/*.mp3)
+// ------------------------------------------------------------
+function playFile(fileName, volume = 0.8) {
+  if (!soundEnabled || typeof window === 'undefined') return null;
+  const audio = new Audio(`${import.meta.env.BASE_URL}sounds/${fileName}`);
+  audio.volume = volume;
+  audio.play().catch(() => {});
+  // Returns a stopper so React effects can cancel cleanly (e.g. StrictMode double-mount)
+  return () => {
+    audio.pause();
+    audio.currentTime = 0;
+  };
+}
+
+/** Plays when the SESSION COMPLETE page appears (universfield-level-complete-143022.mp3). */
+export function playSessionCompleteSound() {
+  return playFile('level-complete.mp3', 0.8);
+}
+
+/** Plays when the Perfect Score badge pops up (vadim_makes_sound-achievement-badge-pop-sound-1-547860.mp3). */
+export function playPerfectBadgeSound() {
+  return playFile('perfect-badge-pop.mp3', 0.95);
+}
+
+/** Plays when the Cyber Guardian badge achievement is awarded (universfield-achievement-unlock-243762.mp3). */
+export function playGuardianAchievementSound() {
+  return playFile('guardian-unlock.mp3', 0.9);
+}
+
+/** Plays when 3 hearts run out and the Out of Hearts popup appears (lesiakower-8-bit-game-over-sound-effect-331435.mp3). */
+export function playGameOverSound() {
+  return playFile('game-over.mp3', 0.9);
+}
+
+// Alias for backwards compatibility
+export const playAchievementSound = playGuardianAchievementSound;

@@ -3,9 +3,14 @@
 //  Written for kids: "x out of 3 right", points gained, time taken,
 //  gold badge for a perfect score, and a plain-language skill breakdown.
 // ============================================================
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGame } from '../context/GameContext';
 import { TOPICS, TOPIC_TIPS } from '../data/scenarios';
+import {
+  playSessionCompleteSound,
+  playPerfectBadgeSound,
+  playGuardianAchievementSound,
+} from '../utils/audio';
 
 const TOTAL_QUESTIONS = TOPICS.length;
 
@@ -27,7 +32,20 @@ function useCountUp(target) {
 }
 
 /* Gold "perfect score" sticker (cream die-cut edge like the collage stickers) */
-function GoldBadge() {
+function GoldBadge({ playSound = false }) {
+  useEffect(() => {
+    if (!playSound) return;
+    let stopSound = null;
+    // Play Vadim's achievement badge pop sound synced with the 0.9s CSS pop animation
+    const t = setTimeout(() => {
+      stopSound = playPerfectBadgeSound();
+    }, 900);
+    return () => {
+      clearTimeout(t);
+      stopSound?.();
+    };
+  }, [playSound]);
+
   return (
     <div className="gold-badge" role="img" aria-label="Gold badge: perfect score, every answer right">
       <svg viewBox="0 0 96 112" width="76" height="88" aria-hidden="true">
@@ -58,7 +76,7 @@ function GoldBadge() {
   );
 }
 
-function ScoreCard({ label, score, rightCount, cyan }) {
+function ScoreCard({ label, score, rightCount, cyan, playBadgeSound = false }) {
   const shown = useCountUp(score);
   const perfect = score === 100;
   return (
@@ -77,7 +95,7 @@ function ScoreCard({ label, score, rightCount, cyan }) {
           <span className="score-of">/ 100</span>
           <p className="score-right">{rightCount} OUT OF {TOTAL_QUESTIONS} RIGHT</p>
         </div>
-        {perfect && <GoldBadge />}
+        {perfect && <GoldBadge playSound={playBadgeSound} />}
       </div>
     </div>
   );
@@ -154,6 +172,66 @@ function getImprovement(delta, pre, post, preRight, postRight) {
   };
 }
 
+/* Cyber Guardian award: revealed (with the unlock sound) when it scrolls into view */
+function CyberGuardianBadge({ playerName }) {
+  const ref = useRef(null);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let stopSound = null;
+    let done = false;
+
+    const reveal = () => {
+      if (done) return;
+      done = true;
+      setRevealed(true);
+      stopSound = playGuardianAchievementSound();
+    };
+
+    if (typeof IntersectionObserver === 'undefined') {
+      const t = setTimeout(reveal, 1200);
+      return () => { clearTimeout(t); stopSound?.(); };
+    }
+
+    const observer = new IntersectionObserver(
+      entries => { if (entries.some(e => e.isIntersecting)) { reveal(); observer.disconnect(); } },
+      { threshold: 0.55 },
+    );
+    observer.observe(el);
+    return () => { observer.disconnect(); stopSound?.(); };
+  }, []);
+
+  return (
+    <section
+      ref={ref}
+      id="cyber-guardian-award"
+      className={`guardian ${revealed ? 'revealed' : ''}`}
+      aria-label="Cyber Guardian badge awarded"
+    >
+      <p className="guardian-kicker">ACHIEVEMENT UNLOCKED</p>
+      <div className="guardian-stage">
+        <span className="guardian-ring" aria-hidden="true" />
+        <img
+          src={`${import.meta.env.BASE_URL}cyber-guardian-badge.png`}
+          className="guardian-badge"
+          alt="Cyber Guardian badge: a golden pixel shield"
+        />
+        <i className="spark s1" aria-hidden="true" />
+        <i className="spark s2" aria-hidden="true" />
+        <i className="spark s3" aria-hidden="true" />
+        <i className="spark s4" aria-hidden="true" />
+      </div>
+      <h2 className="guardian-title">CYBER GUARDIAN</h2>
+      <p className="guardian-copy">
+        {String(playerName).toUpperCase()} GOT <b>{TOTAL_QUESTIONS} OUT OF {TOTAL_QUESTIONS}</b> RIGHT IN THE POST-TEST.
+        YOU CAN SPOT THE TRAPS AND KEEP YOUR ACCOUNT SAFE!
+      </p>
+    </section>
+  );
+}
+
 export default function DashboardScreen() {
   const { state, dispatch } = useGame();
   const {
@@ -167,6 +245,13 @@ export default function DashboardScreen() {
   const preRight  = topicPreScores.filter(s => s >= 100).length;
   const postRight = topicPostScores.filter(s => s >= 100).length;
   const improvement = getImprovement(delta, pre, post, preRight, postRight);
+  const earnedGuardian = postRight >= TOTAL_QUESTIONS;
+
+  // "Level complete" jingle when the SESSION COMPLETE page appears
+  useEffect(() => {
+    const stop = playSessionCompleteSound();
+    return () => stop?.();
+  }, []);
 
   return (
     <main id="dashboard-screen" className="stage dash">
@@ -186,8 +271,19 @@ export default function DashboardScreen() {
       )}
 
       <div className="score-row" role="region" aria-label="Score comparison">
-        <ScoreCard label="PRE-TEST"  score={pre}  rightCount={preRight} />
-        <ScoreCard label="POST-TEST" score={post} rightCount={postRight} cyan />
+        <ScoreCard
+          label="PRE-TEST"
+          score={pre}
+          rightCount={preRight}
+          playBadgeSound={pre === 100 && post !== 100}
+        />
+        <ScoreCard
+          label="POST-TEST"
+          score={post}
+          rightCount={postRight}
+          cyan
+          playBadgeSound={post === 100}
+        />
       </div>
       <p className="score-note">
         EVERY RIGHT ANSWER IS WORTH {Math.round(100 / TOTAL_QUESTIONS)} POINTS, SO {TOTAL_QUESTIONS} RIGHT = 100!
@@ -196,8 +292,8 @@ export default function DashboardScreen() {
       <div className="metric-card" role="region" aria-label="Behavioral improvement summary">
         <div className="metric-icon" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M4 19V5M4 19h16" stroke="#0095b6" strokeWidth="2" strokeLinecap="round" />
-            <path d="M8 15l3-4 3 2 4-6" stroke="#0095b6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M4 19V5M4 19h16" stroke="var(--cyan)" strokeWidth="2.2" strokeLinecap="round" />
+            <path d="M8 15l3-4 3 2 4-6" stroke="var(--cyan)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
         <div>
@@ -232,6 +328,8 @@ export default function DashboardScreen() {
         ))}
       </section>
 
+      {earnedGuardian && <CyberGuardianBadge playerName={playerName} />}
+
       <div className="dash-actions">
         <button
           id="restart-session-btn"
@@ -239,7 +337,7 @@ export default function DashboardScreen() {
           onClick={() => dispatch({ type: 'RESTART' })}
           aria-label="Restart the SyberAware session from the beginning"
         >
-          ‹ RESTART SESSION DEMO
+          ‹ RESTART SESSION
         </button>
       </div>
     </main>

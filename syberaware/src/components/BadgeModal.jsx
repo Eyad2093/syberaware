@@ -4,6 +4,7 @@
 // ============================================================
 import React, { useEffect } from 'react';
 import CyberByte from './CyberByte';
+import { playGameOverSound } from '../utils/audio';
 
 export default function BadgeModal({
   isOpen,
@@ -18,6 +19,14 @@ export default function BadgeModal({
   buttonLabel = 'CONTINUE QUEST →',
   onContinue,
 }) {
+  const gameOver = variant === 'gameover';
+
+  useEffect(() => {
+    if (!isOpen || !gameOver) return;
+    const stop = playGameOverSound();
+    return () => stop?.();
+  }, [isOpen, gameOver]);
+
   useEffect(() => {
     if (!isOpen) return;
     const handler = e => {
@@ -29,7 +38,6 @@ export default function BadgeModal({
 
   if (!isOpen) return null;
 
-  const gameOver = variant === 'gameover';
   const mood = gameOver ? 'alert' : isCorrect ? 'happy' : pointsEarned === 1 ? 'thinking' : 'alert';
 
   return (

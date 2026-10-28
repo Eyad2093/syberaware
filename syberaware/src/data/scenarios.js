@@ -15,7 +15,7 @@ export const PRE_TEST_SCENARIOS = [
       { id: 'c', label: 'C.', text: 'Delete the email and report it as phishing.' },
     ],
     correctId: 'c',
-    footer: 'SAMPLE SCENARIO // PRE-TEST',
+    footer: 'SCENARIO // PRE-TEST',
   },
   {
     id: 'pre-2',
@@ -28,7 +28,7 @@ export const PRE_TEST_SCENARIOS = [
       { id: 'c', label: 'C.', text: 'Ask an adult or google if the game has such a prize.' },
     ],
     correctId: 'b',
-    footer: 'SAMPLE SCENARIO // PRE-TEST',
+    footer: 'SCENARIO // PRE-TEST',
   },
   {
     id: 'pre-3',
@@ -41,7 +41,7 @@ export const PRE_TEST_SCENARIOS = [
       { id: 'c', label: 'C.', text: 'Decline and report the request — real friends don\'t ask that.' },
     ],
     correctId: 'c',
-    footer: 'SAMPLE SCENARIO // PRE-TEST',
+    footer: 'SCENARIO // PRE-TEST',
   },
   {
     id: 'pre-4',
@@ -54,7 +54,7 @@ export const PRE_TEST_SCENARIOS = [
       { id: 'c', label: 'C.', text: 'Create a long, unique 4-word passphrase with symbols and numbers.' },
     ],
     correctId: 'c',
-    footer: 'SAMPLE SCENARIO // PRE-TEST',
+    footer: 'SCENARIO // PRE-TEST',
   },
 ];
 
@@ -87,7 +87,7 @@ export const QUEST_SCENARIOS = [
       explanation:
         'Legitimate game support NEVER demands passwords via chat or email. Urgency is a manipulation tactic. Always report suspicious messages.',
     },
-    footer: 'SAMPLE QUEST // CHOOSE YOUR NEXT MOVE',
+    footer: 'QUEST // CHOOSE YOUR NEXT MOVE',
   },
   {
     id: 'quest-2',
@@ -117,7 +117,7 @@ export const QUEST_SCENARIOS = [
       explanation:
         "No legitimate player or service needs your password. Free currency glitches are bait. Always report these to keep your account safe.",
     },
-    footer: 'SAMPLE QUEST // CHOOSE YOUR NEXT MOVE',
+    footer: 'QUEST // CHOOSE YOUR NEXT MOVE',
   },
   {
     id: 'quest-3',
@@ -147,7 +147,7 @@ export const QUEST_SCENARIOS = [
       explanation:
         "Even sharing just your name and photo can be dangerous. Fake clans are used to build profiles on real kids. Always protect your identity online.",
     },
-    footer: 'SAMPLE QUEST // CHOOSE YOUR NEXT MOVE',
+    footer: 'QUEST // CHOOSE YOUR NEXT MOVE',
   },
   {
     id: 'quest-4',
@@ -177,7 +177,7 @@ export const QUEST_SCENARIOS = [
       explanation:
         'Hackers use automated dictionary tools that test millions of common words and slight variations like adding "!" or changing "4" to "5" in seconds. Always use long, unique passphrases!',
     },
-    footer: 'SAMPLE QUEST // CHOOSE YOUR NEXT MOVE',
+    footer: 'QUEST // CHOOSE YOUR NEXT MOVE',
   },
 ];
 
@@ -193,7 +193,7 @@ export const POST_TEST_SCENARIOS = [
       { id: 'c', label: 'C.', text: 'Click the link because the message looks official.' },
     ],
     correctId: 'a',
-    footer: 'SAMPLE SCENARIO // POST-TEST',
+    footer: 'SCENARIO // POST-TEST',
   },
   {
     id: 'post-2',
@@ -206,7 +206,7 @@ export const POST_TEST_SCENARIOS = [
       { id: 'c', label: 'C.', text: "Tell a friend and let them decide if it's safe." },
     ],
     correctId: 'b',
-    footer: 'SAMPLE SCENARIO // POST-TEST',
+    footer: 'SCENARIO // POST-TEST',
   },
   {
     id: 'post-3',
@@ -219,7 +219,7 @@ export const POST_TEST_SCENARIOS = [
       { id: 'c', label: 'C.', text: "Accept — rare items are worth it." },
     ],
     correctId: 'b',
-    footer: 'SAMPLE SCENARIO // POST-TEST',
+    footer: 'SCENARIO // POST-TEST',
   },
   {
     id: 'post-4',
@@ -232,7 +232,7 @@ export const POST_TEST_SCENARIOS = [
       { id: 'c', label: 'C.', text: 'Create a long, memorable passphrase with random words, numbers, and symbols unique to this account.' },
     ],
     correctId: 'c',
-    footer: 'SAMPLE SCENARIO // POST-TEST',
+    footer: 'SCENARIO // POST-TEST',
   },
 ];
 
