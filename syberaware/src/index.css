@@ -784,62 +784,78 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 }
 
 /* ============================================================
-   NAV BAR — tablet widths (721px – 1180px, plus 1181px – 1280px on
+   NAV BAR — tablet widths (520px – 1180px, plus 1181px – 1280px on
    short landscape tablet screens)
    The fixed-width stage tabs + stats no longer fit in one row,
    so the tabs shrink to their text and spacing tightens.
    ============================================================ */
-@media (min-width: 721px) and (max-width: 1180px),
+@media (min-width: 520px) and (max-width: 1180px),
        (min-width: 1181px) and (max-width: 1280px) and (max-height: 860px) {
   .nav-bar { padding: 0 20px; }
+  .nav-counter, .nav-level { display: inline; }
   .nav-left { gap: 14px; }
   .nav-right { gap: 14px; }
   .nav-tabs { gap: 6px; }
   .nav-bar .nav-tab[data-stage] { width: auto; padding: 0 10px; font-size: 10px; letter-spacing: 0.05em; }
 }
 
-/* Portrait tablets: logo + stats on the first row, stage tabs on a
-   second full-width row so nothing scrolls sideways or gets hidden. */
-@media (min-width: 721px) and (max-width: 960px) {
+/* Portrait & smaller tablets (520px – 960px): logo + stats on the first row,
+   stage tabs on a second full-width row so nothing scrolls sideways or gets hidden. */
+@media (min-width: 520px) and (max-width: 960px) {
   .nav-bar {
     height: auto;
     min-height: 54px;
     flex-wrap: wrap;
     row-gap: 8px;
-    padding: 8px 24px 10px;
+    padding: 8px 20px 10px;
     overflow: visible;
   }
   .nav-left  { flex: 1 1 auto; min-width: 0; }
   .nav-right { flex: 0 0 auto; min-width: 0; }
-  .nav-tabs  { order: 3; flex: 1 1 100%; justify-content: stretch; gap: 8px; }
-  .nav-bar .nav-tab[data-stage] { flex: 1 1 auto; height: 38px; padding: 0 12px; font-size: 10.5px; letter-spacing: 0.06em; }
+  .nav-tabs  { order: 3; flex: 1 1 100%; justify-content: stretch; gap: 6px; }
+  .nav-bar .nav-tab[data-stage] { flex: 1 1 auto; height: 36px; padding: 0 8px; font-size: 10px; letter-spacing: 0.05em; }
 }
 
 /* ============================================================
-   VERTICAL TABLET (portrait, ~768px – 834px wide)
+   VERTICAL TABLET (portrait, ~520px – 1100px wide: covers 8"–8.7"
+   Samsung Galaxy Tab A / A7 Lite / A9 at 533px–712px and iPads at
+   744px–834px)
    Flexible container with generous padding, extra breathing
    room between cards and choices, no horizontal overflow.
    ============================================================ */
-@media (orientation: portrait) and (min-width: 721px) and (max-width: 1100px) {
-  .stage { max-width: 780px; padding: 28px 32px 56px 28px; }
+@media (orientation: portrait) and (min-width: 520px) and (max-width: 1100px) {
+  .stage { max-width: 780px; padding: 26px 26px 52px 22px; }
   .dash { max-width: 760px; padding-top: 22px; }
-  .game-card { padding: 32px 30px 26px; }
+  .game-card { padding: 28px 24px 24px; box-shadow: 12px 10px 0 var(--card-side); }
+  .scenario-region { padding: 22px 24px 24px; }
+  .chat-region { padding: 18px 20px; }
+  .choices-region { margin-top: 20px; gap: 16px; }
+  .choice-btn { padding: 18px 20px 16px; }
+  .card-footer { padding-top: 24px; }
+  .score-row { flex-direction: row; gap: 18px; }
+  .modal-card { max-width: 520px; }
+  .welcome { padding: 32px 24px; }
+}
+
+@media (orientation: portrait) and (min-width: 721px) and (max-width: 1100px) {
+  .stage { padding: 28px 32px 56px 28px; }
+  .game-card { padding: 32px 30px 26px; box-shadow: 14px 12px 0 var(--card-side); }
   .scenario-region { padding: 24px 28px 28px; }
   .chat-region { padding: 20px 22px; }
   .choices-region { margin-top: 22px; gap: 16px; }
   .choice-btn { padding: 18px 22px 16px; }
   .card-footer { padding-top: 26px; }
-  .modal-card { max-width: 520px; }
+  .score-row { gap: 22px; }
   .welcome { padding: 40px 28px; }
 }
 
 /* ============================================================
-   HORIZONTAL TABLET (landscape, short viewport ~600px – 860px tall)
+   HORIZONTAL TABLET (landscape, ~600px – 1280px wide, short height)
    Natural vertical flow (min-height only, no forced full-screen
    heights). Story and choices sit side by side so the dilemma,
    the answers and Cyber-Byte's feedback fit without long scrolls.
    ============================================================ */
-@media (orientation: landscape) and (min-width: 721px) and (max-width: 1280px) and (max-height: 860px) {
+@media (orientation: landscape) and (min-width: 600px) and (max-width: 1280px) and (max-height: 860px) {
 
   /* --- page frame --- */
   .stage { max-width: 1040px; padding: 18px 32px 28px 28px; }
@@ -899,7 +915,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .stage.dash .pixel-title { font-size: clamp(2.2rem, 5vw, 3rem); }
   .stage.dash > .dash-sub { margin-top: 14px; }
 
-  .stage.dash > .score-row { grid-column: span 2; margin-top: 18px; gap: 22px; }
+  .stage.dash > .score-row { grid-column: span 2; margin-top: 18px; gap: 22px; flex-direction: row; }
   .stage.dash > .metric-card {
     grid-column: auto;
     margin-top: 18px;
@@ -958,4 +974,46 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
   /* codename field: roomy, and 16px text stops iPad Safari zooming the page on focus */
   .welcome-input { min-height: 52px; font-size: 16px; }
+}
+
+/* Compact landscape tablets (e.g. 8"–8.7" Samsung Galaxy Tab A / A7 Lite / A9
+   where browser bars leave ~440px–600px of viewport height) */
+@media (orientation: landscape) and (min-width: 600px) and (max-width: 1024px) and (max-height: 620px) {
+  .nav-bar { padding: 4px 16px 6px; row-gap: 4px; min-height: 44px; }
+  .nav-bar .nav-tab[data-stage] { height: 30px; font-size: 9.5px; }
+  .stage { padding: 10px 24px 20px 20px; }
+  .pixel-title { font-size: clamp(1.7rem, 4vw, 2.2rem); }
+  .page-subtitle { margin-top: 4px; }
+  .card-tab { margin-top: 4px; padding: 6px 18px 8px; }
+  .stage .game-card { padding: 16px 20px 14px; column-gap: 18px; }
+  .scenario-region { padding: 16px 18px; min-height: 0; }
+  .scenario-tag { margin-bottom: 10px; }
+  .chat-region { padding: 12px 14px; }
+  .byte-row { margin-top: 10px; }
+  .choices-region { gap: 10px; }
+  .choice-btn { min-height: 52px; padding: 12px 16px 11px; }
+  .stage .game-card > .card-footer { padding-top: 12px; }
+  .welcome { padding: 12px 16px; }
+  .welcome .game-card { padding: 18px 26px 16px; }
+  .welcome-title { font-size: 2.2rem; margin: 6px 0; }
+  .welcome-sub { margin-bottom: 6px; }
+  .welcome-copy { margin-bottom: 12px; font-size: 0.85rem; }
+  .welcome-input { min-height: 46px; padding: 10px 14px; margin-bottom: 12px; }
+  .btn-pink.large { min-height: 50px; padding: 14px 42px 12px; }
+  .welcome-steps { margin-top: 12px; }
+  .modal-card { padding: 18px 22px; column-gap: 18px; }
+  .modal-card > .modal-actions { margin-top: 12px; }
+  .stage.dash { padding-top: 8px; column-gap: 14px; }
+  .stage.dash .pixel-title { font-size: 1.65rem; }
+  .stage.dash > .dash-sub { margin-top: 6px; }
+  .stage.dash > .dash-hello { margin-top: 4px; }
+  .stage.dash .dash-streak-banner { margin-top: 8px; padding: 5px 14px; }
+  .stage.dash > .score-row { margin-top: 10px; gap: 14px; }
+  .stage.dash > .metric-card { margin-top: 10px; padding: 12px 14px; gap: 6px 10px; }
+  .stage.dash .score-card { padding: 12px 14px 14px; }
+  .stage.dash .score-top { margin-bottom: 8px; }
+  .stage.dash .score-main { min-height: 70px; }
+  .stage.dash .score-big { font-size: 2.5rem; }
+  .stage.dash .score-of { margin-left: 6px; white-space: nowrap; }
+  .stage.dash .metric-value strong { font-size: 2rem; }
 }
